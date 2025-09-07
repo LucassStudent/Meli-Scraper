@@ -152,8 +152,8 @@ Antes de rodar em escala:
 
 * Baixar as imagens em disco (com estrutura por ID).
 * Exportar **NDJSON/Parquet**.
-* CLI com opções (`--in`, `--csv`, `--json`, `--headless=false`, `--delay=900:2500`).
-* Suporte a **proxy**/rotacionadores.
+* Interface navegável
+* Suporte a **proxy**/rotacionadores (para evitar bloqueios).
 * Coleta de **reviews/QA**.
 
 ---
