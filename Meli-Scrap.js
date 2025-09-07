@@ -17,9 +17,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // ====== CONFIG ======
-const DEFAULT_IDS_FILE = 'D:\\Trabaio\\Meli\\Meli-scarp\\mlb_ids.txt';
-const DEFAULT_CSV_PATH = 'D:\\Trabaio\\Meli\\Meli-scarp\\mlb\\WEGA_saida.csv';
-const DEFAULT_JSON_PATH = 'D:\\Trabaio\\Meli\\Meli-scarp\\mlb\\WEGA_saida.json';
+const DEFAULT_IDS_FILE = 'C:\\XXXX\\XXX.txt';
+const DEFAULT_CSV_PATH = 'C:\\XXXX\\XXX.csv';
+const DEFAULT_JSON_PATH = 'C:\\XXXX\\XXX.json';
 const HEADLESS = true;
 const MAX_WAIT_MS = 12000;
 const PAUSE_MS = [900, 2500];
