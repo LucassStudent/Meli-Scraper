@@ -33,7 +33,7 @@ Exporta os resultados em **CSV** (com BOM UTF-8 e **separador `;`**, amigável a
 ## 🚀 Instalação
 
 ```bash
-git clone https://github.com/<seu-usuario>/Meli-Scrap.git
+git clone https://github.com/LucassStudent/Meli-Scrap.git
 cd Meli-Scrap
 npm i
 ```
