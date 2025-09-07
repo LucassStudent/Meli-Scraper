@@ -169,18 +169,3 @@ MIT — veja `LICENSE`.
 * **puppeteer-extra + stealth** (evita sinais de automação) ([npm][1])
 * **random-useragent** (UA randômicos com filtro desktop) ([npm][5])
 * **PhotoSwipe** (lightbox observado na coleta por `.pswp`) ([photoswipe.com][2])
-
----
-
-Se quiser, eu já converto as **constantes de caminho** para **variáveis de ambiente** e adiciono um **bin CLI** (`npx meli-scrap --in ids.txt ...`).
-
-[1]: https://www.npmjs.com/package/puppeteer-extra-plugin-stealth?utm_source=chatgpt.com "puppeteer-extra-plugin-stealth"
-[2]: https://photoswipe.com/methods/?utm_source=chatgpt.com "PhotoSwipeLightbox methods"
-[3]: https://support.microsoft.com/en-us/office/change-the-character-used-to-separate-thousands-or-decimals-c093b545-71cb-4903-b205-aebb9837bd1e?utm_source=chatgpt.com "Change the character used to separate thousands or decimals"
-[4]: https://www.ablebits.com/office-addins-blog/change-excel-csv-delimiter/?utm_source=chatgpt.com "How to change Excel CSV delimiter to comma or semicolon"
-[5]: https://www.npmjs.com/package/random-useragent?utm_source=chatgpt.com "random-useragent"
-[6]: https://superuser.com/questions/407082/easiest-way-to-open-csv-with-commas-in-excel?utm_source=chatgpt.com "Easiest way to open CSV with commas in Excel - Super User"
-[7]: https://well-known.dev/resources/robots_txt/sites/mercadolibre.com?utm_source=chatgpt.com "mercadolibre.com robots.txt - Well-known.dev"
-[8]: https://developers.google.com/search/docs/crawling-indexing/robots/intro?hl=es&utm_source=chatgpt.com "Introducción a los archivos robots.txt"
-[9]: https://www.theverge.com/2024/7/25/24205943/anthropic-ai-web-crawler-claudebot-ifixit-scraping-training-data?utm_source=chatgpt.com "Anthropic's crawler is ignoring websites' anti-AI scraping policies"
-[10]: https://global-selling.mercadolibre.com/devsite/mercado-libre-global-selling-developer-terms-and-conditions?utm_source=chatgpt.com "Terms and Conditions"
