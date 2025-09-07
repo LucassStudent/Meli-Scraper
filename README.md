@@ -1,7 +1,3 @@
-Aqui está um **README.md** pronto para o seu repositório. Se quiser, eu já adapto nomes, caminhos e um exemplo de `mlb_ids.txt`.
-
----
-
 # Meli-Scrap
 
 Scraper resiliente para anúncios do **Mercado Livre / Mercado Libre** usando **Puppeteer + Stealth**.
