@@ -1,10 +1,12 @@
 {
   "name": "meli-scraper",
-  "version": "1.0.0",
+  "version": "0.1.0",
+  "type": "module",
   "description": "",
   "main": "Meli-Scrap.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node Meli-Scrap.js",
+    "test": "echo \"(sem testes)\" && exit 0"
   },
   "repository": {
     "type": "git",
@@ -18,6 +20,7 @@
   },
   "homepage": "https://github.com/LucassStudent/Meli-Scraper#readme",
   "dependencies": {
+    "puppeteer": "^24.19.0",
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-stealth": "^2.11.2",
     "random-useragent": "^0.5.0"
