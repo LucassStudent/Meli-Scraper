@@ -17,9 +17,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // ====== CONFIG ======
-const DEFAULT_IDS_FILE  = "D:\\Trabaio\\Meli\\Meli-scarp\\mlb_ids.txt";
-const DEFAULT_CSV_PATH  = "D:\\Trabaio\\Meli\\Meli-scarp\\mlb\\saida.csv";
-const DEFAULT_JSON_PATH = "D:\\Trabaio\\Meli\\Meli-scarp\\mlb\\saida.json";
+const DEFAULT_IDS_FILE  = "C:\\Users\\lfcar\\OneDrive\\Desktop\\mlb\\mlb_ids.txt";
+const DEFAULT_CSV_PATH  = "C:\\Users\\lfcar\\OneDrive\\Desktop\\mlb\\saida.csv";
+const DEFAULT_JSON_PATH = "C:\\Users\\lfcar\\OneDrive\\Desktop\\mlb\\saida.json";
 const HEADLESS = true;
 const MAX_WAIT_MS = 12000;
 const PAUSE_MS = [900, 2500];
@@ -85,20 +85,26 @@ async function waitAny(page, selectors, timeout = MAX_WAIT_MS) {
 
 /** Links por regra:
  * MLBU##########  -> http://mercadolivre.com.br/aaa/up/MLBU##########
- * MLB##########   -> Verifica comprimento para decidir formato da URL
+ * MLB##########   -> https://produto.mercadolivre.com.br/MLB-##########
  */
 function buildUrlByRule(itemId) {
     const id = itemId.trim().toUpperCase();
-    if (id.startsWith("MLBU")) return `http://mercadolivre.com.br/aaa/up/${id}`;
-    if (id.startsWith("MLB-")) return `https://produto.mercadolivre.com.br/${id}`;
-    if (id.startsWith("MLB")) {
-        // Verifica comprimento para determinar formato da URL
-        const numPart = id.slice(3);
-        if (numPart.length <= 8) {
-            return `http://mercadolivre.com.br/aaa/p/${id}`;
-        } else {
-            return `https://produto.mercadolivre.com.br/MLB-${numPart}`;
-        }
+
+    // Remove qualquer hífen existente no ID
+    const cleanId = id.replace(/-/g, '');
+
+    if (cleanId.startsWith("MLBU")) {
+        return `http://mercadolivre.com.br/aaa/up/${cleanId}`;
+    }
+    if (cleanId.startsWith("MLB")) {
+        // Para IDs mais curtos (provavelmente mais antigos) usa formato /p/
+        // Para IDs mais longos (provavelmente mais novos) usa formato com hífen
+        const numericPart = cleanId.slice(3);
+        const isShortId = numericPart.length <= 8;
+
+        return isShortId ?
+            `http://mercadolivre.com.br/aaa/p/${cleanId}` :
+            `https://produto.mercadolivre.com.br/MLB-${numericPart}`;
     }
     return null;
 }
