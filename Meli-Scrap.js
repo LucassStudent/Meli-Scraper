@@ -17,9 +17,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // ====== CONFIG ======
-const DEFAULT_IDS_FILE  = "C:\\Users\\lfcar\\OneDrive\\Desktop\\mlb\\mlb_ids.txt";
-const DEFAULT_CSV_PATH  = "C:\\Users\\lfcar\\OneDrive\\Desktop\\mlb\\saida.csv";
-const DEFAULT_JSON_PATH = "C:\\Users\\lfcar\\OneDrive\\Desktop\\mlb\\saida.json";
+const DEFAULT_IDS_FILE  = "D:\\Trabaio\\Meli\\Meli-scarp\\mlb_ids.txt";
+const DEFAULT_CSV_PATH  = "D:\\Trabaio\\Meli\\Meli-scarp\\mlb\\saida.csv";
+const DEFAULT_JSON_PATH = "D:\\Trabaio\\Meli\\Meli-scarp\\mlb\\saida.json";
 const HEADLESS = true;
 const MAX_WAIT_MS = 12000;
 const PAUSE_MS = [900, 2500];
@@ -216,6 +216,88 @@ async function getPrice(page) {
     if (anyPrice) {
         const txt = await page.evaluate(el => el.textContent?.trim() || "", anyPrice);
         if (txt) return cleanTxt(txt);
+    }
+    return "";
+}
+
+// Função auxiliar para extrair preço de um elemento fraction - CORRIGIDA
+async function getPriceFromElement(element) {
+    const fraction = await element.evaluate(el => el.textContent?.trim() || "");
+    if (!fraction) return "";
+
+    // Encontra os centavos correspondentes de forma correta
+    const cents = await element.evaluate(el => {
+        const parent = el.parentElement;
+        if (parent) {
+            const centsEl = parent.querySelector('.andes-money-amount__cents');
+            return centsEl ? centsEl.textContent.trim() : '';
+        }
+        return '';
+    });
+
+    return cleanTxt(cents ? `${fraction},${cents}` : fraction);
+}
+
+// Nova função para extrair preço promocional baseada em estilo
+async function getPromotionPrice(page) {
+    try {
+        // Encontra todos os elementos de preço
+        const priceElements = await page.$$('.andes-money-amount__fraction');
+
+        if (priceElements.length < 2) {
+            // Se não há pelo menos dois preços, não há promoção
+            return "";
+        }
+
+        // Analisa o estilo de cada elemento para determinar qual é o preço promocional
+        const priceData = [];
+
+        for (const element of priceElements) {
+            const style = await page.evaluate(el => {
+                const computedStyle = window.getComputedStyle(el);
+                return {
+                    fontSize: computedStyle.fontSize,
+                    color: computedStyle.color,
+                    fontWeight: computedStyle.fontWeight,
+                    text: el.textContent.trim()
+                };
+            }, element);
+
+            priceData.push({
+                element,
+                fontSize: parseFloat(style.fontSize),
+                color: style.color,
+                fontWeight: parseInt(style.fontWeight) || 400,
+                text: style.text
+            });
+        }
+
+        // Ordena por tamanho de fonte (o maior é provavelmente o preço promocional)
+        priceData.sort((a, b) => b.fontSize - a.fontSize);
+
+        // Verifica se há uma diferença significativa no tamanho da fonte
+        if (priceData.length >= 2 && priceData[0].fontSize > priceData[1].fontSize) {
+            // O primeiro elemento deve é o preço promocional (maior fonte)
+            const promotionalPrice = priceData[0];
+
+            // Verifica se a cor é escura (preço promocional)
+            const isDarkColor = promotionalPrice.color.includes('rgba(0, 0, 0, 0.9)') ||
+                promotionalPrice.color.includes('#000000e6') ||
+                promotionalPrice.color.includes('rgb(0, 0, 0)');
+
+            if (isDarkColor) {
+                return await getPriceFromElement(promotionalPrice.element);
+            }
+        }
+
+        // Fallback: procura por elementos com estilo específico de preço promocional
+        for (const price of priceData) {
+            if (price.fontSize >= 36 && price.color.includes('#000000e6')) {
+                return await getPriceFromElement(price.element);
+            }
+        }
+    } catch (e) {
+        console.log('   ❌ Erro ao extrair preço promocional:', e.message);
     }
     return "";
 }
@@ -740,6 +822,7 @@ async function scrapeOne(page, itemId, idx, total) {
 
     const title = await getTitle(page);
     const price = await getPrice(page);
+    const promotionPrice = await getPromotionPrice(page);
     const { vendidos, compat } = await getSoldAndCompat(page);
     const descricao = await getDescription(page);
 
@@ -752,6 +835,7 @@ async function scrapeOne(page, itemId, idx, total) {
 
     console.log(`   • Título: ${title || "(não encontrado)"}`);
     console.log(`   • Preço: ${price || "(não encontrado)"}`);
+    console.log(`   • Preço promocional: ${promotionPrice || "(não encontrado)"}`);
     console.log(`   • Vendas: ${vendidos || "(não encontrado)"}`);
     console.log(`   • Compat: ${compat || "(não encontrado)"}`);
     console.log(`   • Descrição: ${descricao ? "encontrada" : "não encontrada"}`);
@@ -765,6 +849,7 @@ async function scrapeOne(page, itemId, idx, total) {
         permalink: page.url(),
         nome_ad: title,
         preco: price,
+        preco_promocional: promotionPrice,
         vendas: vendidos,
         compatibilidade: compat,
         descricao: descricao,
@@ -780,11 +865,11 @@ function toCsv(rows) {
         ...r,
         imagens_urls: Array.isArray(r.imagens_urls) ? r.imagens_urls.join(" | ") : (r.imagens_urls || "")
     }));
-    const preferred = ["item_id","nome_ad","descricao","ficha_tecnica","vendas","qtd_imagens","imagens_urls","preco","compatibilidade","permalink","erro","tentativas"];
+    const preferred = ["item_id","nome_ad","descricao","ficha_tecnica","vendas","qtd_imagens","imagens_urls","preco","preco_promocional","compatibilidade","permalink","erro","tentativas"];
     const keys = Array.from(norm.reduce((acc, obj) => { Object.keys(obj).forEach(k => acc.add(k)); return acc; }, new Set()));
     const header = [...preferred.filter(k => keys.includes(k)), ...keys.filter(k => !preferred.includes(k))];
     const esc = (v) => { if (v == null) return ""; const s = String(v); return /[\";\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
-    const SEP = ";"; // <<<<<<<<<<<<<<<<<<  separador para Excel PT-BR
+    const SEP = ";";
     const lines = [header.map(esc).join(SEP)];
     for (const row of norm) lines.push(header.map(k => esc(row[k])).join(SEP));
     return lines.join("\n");
@@ -814,7 +899,7 @@ async function main() {
     }
 
     await fs.mkdir(path.dirname(DEFAULT_CSV_PATH), { recursive: true }).catch(() => {});
-    const csvContent = "\uFEFF" + toCsv(results); // BOM UTF-8 para Excel
+    const csvContent = "\uFEFF" + toCsv(results);
     await fs.writeFile(DEFAULT_CSV_PATH, csvContent, "utf8");
     console.log(`[OK] CSV salvo em: ${DEFAULT_CSV_PATH} (com BOM UTF-8; separador ;)`);
 
