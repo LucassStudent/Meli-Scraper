@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/LucassStudent/Meli-Scraper#readme",
   "dependencies": {
-    "puppeteer": "^24.19.0",
+    "puppeteer": "^24.22.3",
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-stealth": "^2.11.2",
     "random-useragent": "^0.5.0"
